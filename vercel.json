@@ -1,5 +1,4 @@
 {
-  "regions": ["sjc1"],
   "git": {
     "deploymentEnabled": {
       "main": true
