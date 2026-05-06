@@ -1,17 +1,4 @@
 {
-  "projectSettings": {
-    "framework": "nextjs",
-    "installCommand": "npm install",
-    "buildCommand": "npm run build",
-    "outputDirectory": ".next"
-  },
-  "env": {
-    "NEXTAUTH_SECRET": "@cortex_nextauth_secret",
-    "NEXT_PUBLIC_PAYMENT_MODE": "@cortex_payment_mode",
-    "YOOKASSA_SHOP_ID": "@cortex_shop_id",
-    "YOOKASSA_SECRET_KEY": "@cortex_secret_key",
-    "NEXT_PUBLIC_APP_URL": "@cortex_app_url"
-  },
   "regions": ["sjc1"],
   "git": {
     "deploymentEnabled": {
