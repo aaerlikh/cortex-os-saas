@@ -205,3 +205,88 @@ export default function ChatPanel() {
     </div>
   );
 }
+      <div className="p-4 border-b border-white/10 glass">
+        <h2 className="text-lg font-semibold text-primary">Cortex Workspace</h2>
+        <p className="text-xs text-secondary">Multi-LLM collaborative space</p>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((message) => (
+          <motion.div
+            key={message.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-xs lg:max-w-md xl:max-w-lg px-4 py-3 rounded-lg ${
+                message.type === 'user'
+                  ? 'bg-gradient-to-r from-[#0066cc] to-[#9333ea] text-white rounded-br-none'
+                  : 'glass text-secondary rounded-bl-none'
+              }`}
+            >
+              {message.type === 'agent' && (
+                <p className="text-xs font-semibold text-accent-primary mb-1">
+                  {message.agent || 'Agent'}
+                </p>
+              )}
+              <p className="text-sm leading-relaxed">{message.content}</p>
+              <p className="text-xs opacity-60 mt-1">
+                {message.timestamp.toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </p>
+            </div>
+          </motion.div>
+        ))}
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex justify-start"
+          >
+            <div className="glass px-4 py-3 rounded-lg rounded-bl-none">
+              <div className="flex gap-2">
+                <div className="w-2 h-2 bg-accent-primary rounded-full animate-pulse" />
+                <div className="w-2 h-2 bg-accent-secondary rounded-full animate-pulse delay-100" />
+                <div className="w-2 h-2 bg-accent-tertiary rounded-full animate-pulse delay-200" />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Input Area */}
+      <div className="p-4 border-t border-white/10 glass">
+        <div className="flex gap-2">
+          <button className="p-2 glass hover:bg-white/20 rounded-lg transition-colors">
+            <Paperclip size={20} className="text-accent-primary" />
+          </button>
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            placeholder="Type your message... (max 1000 chars)"
+            maxLength={1000}
+            className="input-base flex-1"
+          />
+          <button
+            onClick={handleSend}
+            disabled={!input.trim() || isLoading}
+            className="p-2 gradient-accent rounded-lg text-white hover:shadow-lg disabled:opacity-50 transition-all duration-200 hover:scale-105"
+          >
+            {input.trim() ? (
+              <Send size={20} />
+            ) : (
+              <ArrowUp size={20} className="opacity-50" />
+            )}
+          </button>
+        </div>
+        <p className="text-xs text-tertiary mt-2">{input.length}/1000</p>
+      </div>
+    </div>
+  );
+}

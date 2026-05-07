@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 // We use a dummy import for PrismaAdapter since we just installed it but the setup might be incomplete.
 // Normally: import { PrismaAdapter } from "@next-auth/prisma-adapter"
-// import prisma from "@/lib/prisma"
+// // import prisma from .../lib/prisma...
 import GoogleProvider from "next-auth/providers/google";
 import YandexProvider from "next-auth/providers/yandex";
 import CredentialsProvider from "next-auth/providers/credentials";

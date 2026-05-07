@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { Mail, Github, Zap, ArrowRight, Lock } from 'lucide-react';
+import { Mail, Code2, Zap, ArrowRight, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
@@ -130,7 +130,7 @@ export default function LoginPage() {
                 disabled={isLoading}
                 className="w-full py-3 px-4 glass hover:bg-white/20 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 text-primary hover:text-accent-primary disabled:opacity-50"
               >
-                <Github size={20} />
+                <Code2 size={20} />
                 Continue with GitHub
               </button>
               <div className="relative my-4">
