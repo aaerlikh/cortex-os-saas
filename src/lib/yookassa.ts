@@ -1,6 +1,8 @@
 // YooKassa Payment Integration Helper
 // Документация: https://yookassa.ru/developers
 
+import crypto from 'crypto';
+
 const YOOKASSA_SHOP_ID = process.env.YOOKASSA_SHOP_ID || '';
 const YOOKASSA_SECRET_KEY = process.env.YOOKASSA_SECRET_KEY || '';
 const API_BASE_URL = 'https://api.yookassa.ru/v3';
@@ -32,8 +34,7 @@ interface YooKassaPayment {
     type: string;
     confirmation_url?: string;
   };
-  created_at: string;
-  metadata: Record<string, any>;
+  created_at: string;  // eslint-disable-next-line @typescript-eslint/no-explicit-any  metadata: Record<string, unknown>;
 }
 
 /**
@@ -172,7 +173,6 @@ export function verifyWebhookSignature(
   body: string,
   signature: string
 ): boolean {
-  const crypto = require('crypto');
   const hash = crypto
     .createHmac('sha256', YOOKASSA_SECRET_KEY)
     .update(body)
@@ -205,9 +205,11 @@ export async function cancelSubscription(subscriptionId: string): Promise<void> 
   }
 }
 
-export default {
+const yookassaService = {
   createPaymentSession,
   getPayment,
   verifyWebhookSignature,
   cancelSubscription,
 };
+
+export default yookassaService;
