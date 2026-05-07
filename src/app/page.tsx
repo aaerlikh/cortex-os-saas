@@ -3,7 +3,8 @@
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import MainLayout from '@/components/layout/MainLayout';
-import { Zap, ArrowRight, Sparkles, Shield, Code2, Cpu, Gauge } from 'lucide-react';
+import Logo from '@/components/Logo';
+import { ArrowRight, Sparkles, Shield, Cpu, Gauge, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
@@ -62,13 +63,7 @@ export default function Home() {
 
       {/* Header Navigation */}
       <nav className="relative z-20 flex items-center justify-between p-6 border-b border-white/10 backdrop-blur-md">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow-lg shadow-blue-500/50"></div>
-          <div>
-            <h1 className="text-lg font-black text-white tracking-wider">ERLIKH.AI</h1>
-            <p className="text-xs text-gray-400 font-mono">CORTEX OS 4.0</p>
-          </div>
-        </div>
+        <Logo size="md" variant="full" withGlow={true} />
         <button
           onClick={() => signIn()}
           className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all text-sm"

@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { Mail, Code2, Zap, ArrowRight, Lock, ChevronRight } from 'lucide-react';
+import Logo from '@/components/Logo';
+import { ArrowRight, Mail, Lock, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
@@ -10,27 +11,62 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [tab, setTab] = useState<'oauth' | 'email'>('oauth');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     setIsLoading(true);
+
     try {
-      await signIn('credentials', {
+      // Try to sign in with credentials
+      const result = await signIn('credentials', {
         email,
         password,
-        redirect: true,
-        callbackUrl: '/',
+        redirect: false,
       });
+
+      if (result?.error) {
+        setError('Invalid email or password');
+      } else if (result?.ok) {
+        setSuccess(true);
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1500);
+      }
     } catch (error) {
+      setError('Sign in failed. Please try again.');
       console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleOAuthSignIn = (provider: 'google') => {
-    signIn(provider, { callbackUrl: '/' });
+  const handleMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      // Use email provider for magic link
+      const result = await signIn('email', {
+        email,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError('Failed to send magic link');
+      } else if (result?.ok) {
+        setSuccess(true);
+        setEmail('');
+      }
+    } catch (error) {
+      setError('Failed to send magic link');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const containerVariants = {
@@ -82,101 +118,83 @@ export default function LoginPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <motion.div
-              className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 mb-4"
-              whileHover={{ scale: 1.1 }}
+              initial={{ scale: 1 }}
+              whileHover={{ scale: 1.05 }}
             >
-              <Zap size={28} className="text-white" />
+              <Logo size="md" variant="icon" withGlow={true} />
             </motion.div>
-            <h1 className="text-2xl font-black text-white mb-2 tracking-wider">ERLIKH.AI</h1>
+            <h1 className="text-2xl font-black text-white mb-2 tracking-wider mt-4">ERLIKH.AI</h1>
             <p className="text-gray-400 font-mono text-sm">CORTEX OS 4.0</p>
-            <p className="text-gray-500 text-sm mt-2">Your AI Operating System</p>
+            <p className="text-gray-500 text-sm mt-2">Sign in to your account</p>
           </div>
 
-          {/* Tab Navigation */}
-          <div className="flex gap-2 mb-6 bg-white/5 rounded-lg p-1">
-            <button
-              onClick={() => setTab('oauth')}
-              className={`flex-1 py-2 rounded-md font-semibold transition-all ${ tab === 'oauth' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'text-gray-400 hover:text-white'}`}
-            >
-              OAUTH
-            </button>
-            <button
-              onClick={() => setTab('email')}
-              className={`flex-1 py-2 rounded-md font-semibold transition-all ${tab === 'email' ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white' : 'text-gray-400 hover:text-white'}`}
-            >
-              EMAIL
-            </button>
-          </div>
-
-          {/* OAuth Tab */}
-          {tab === 'oauth' && (
+          {/* Status Messages */}
+          {error && (
             <motion.div
-              key="oauth"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-3"
+              className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm"
             >
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleOAuthSignIn('google')}
-                disabled={isLoading}
-                className="w-full px-4 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2 tracking-wide"
-              >
-                <Code2 size={20} />
-                SIGN IN WITH GOOGLE
-              </motion.button>
-              <p className="text-center text-gray-500 text-xs mt-4">
-                🔐 Secure OAuth via Google
-              </p>
+              {error}
             </motion.div>
           )}
 
-          {/* Email Tab */}
-          {tab === 'email' && (
-            <motion.form
-              key="email"
+          {success && (
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              onSubmit={handleEmailSignIn}
-              className="space-y-4"
+              className="mb-4 p-3 bg-green-500/20 border border-green-500/50 rounded-lg text-green-300 text-sm"
             >
-              <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">EMAIL</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-blue-500/50 focus:outline-none transition-all"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2">PASSWORD</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-blue-500/50 focus:outline-none transition-all"
-                  required
-                />
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                disabled={isLoading}
-                className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all flex items-center justify-center gap-2 tracking-wide"
-              >
-                {isLoading ? "SIGNING IN..." : "SIGN IN"}
-                {!isLoading && <ArrowRight size={18} />}
-              </motion.button>
-            </motion.form>
+              ✓ Success! Redirecting...
+            </motion.div>
           )}
+
+          {/* Email Sign In Form */}
+          <motion.form
+            onSubmit={handleEmailSignIn}
+            className="space-y-4"
+          >
+            <div>
+              <label className="block text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+                <Mail size={16} className="text-blue-400" />
+                EMAIL
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-blue-500/50 focus:outline-none transition-all"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
+                <Lock size={16} className="text-blue-400" />
+                PASSWORD
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-blue-500/50 focus:outline-none transition-all"
+                required
+              />
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={isLoading}
+              className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-black rounded-lg hover:shadow-lg hover:shadow-blue-500/50 transition-all flex items-center justify-center gap-2 tracking-wide disabled:opacity-50"
+            >
+              {isLoading ? "SIGNING IN..." : "SIGN IN"}
+              {!isLoading && <ArrowRight size={18} />}
+            </motion.button>
+          </motion.form>
 
           {/* Divider */}
           <div className="relative my-6">
@@ -188,9 +206,25 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {/* Magic Link Section */}
+          <div className="space-y-3">
+            <p className="text-center text-xs text-gray-400">
+              Don't have a password? Sign up with email below
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleMagicLink}
+              disabled={isLoading || !email}
+              className="w-full px-4 py-2 border-2 border-white/20 text-white font-semibold rounded-lg hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/20 transition-all text-sm disabled:opacity-50"
+            >
+              SEND MAGIC LINK
+            </motion.button>
+          </div>
+
           {/* Footer */}
-          <div className="text-center text-xs text-gray-500 space-y-2">
-            <p>No account? Contacts support@erlikh.ai</p>
+          <div className="text-center text-xs text-gray-500 space-y-3 mt-6 pt-6 border-t border-white/10">
+            <p>No account yet? Contact: support@erlikh.ai</p>
             <Link href="/" className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 font-semibold">
               Back to Home <ChevronRight size={14} />
             </Link>
@@ -199,7 +233,7 @@ export default function LoginPage() {
 
         {/* Security Badge */}
         <div className="text-center mt-6 text-xs text-gray-400 font-mono">
-          ✨ Enterprise-grade security with end-to-end encryption
+          🔐 Enterprise-grade security with end-to-end encryption
         </div>
       </motion.div>
     </div>
