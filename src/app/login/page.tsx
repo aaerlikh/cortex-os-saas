@@ -29,7 +29,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleOAuthSignIn = (provider: 'google' | 'github') => {
+  const handleOAuthSignIn = (provider: 'google') => {
     signIn(provider, { callbackUrl: '/' });
   };
 
@@ -124,14 +124,6 @@ export default function LoginPage() {
               >
                 <Mail size={20} />
                 Continue with Google
-              </button>
-              <button
-                onClick={() => handleOAuthSignIn('github')}
-                disabled={isLoading}
-                className="w-full py-3 px-4 glass hover:bg-white/20 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 text-primary hover:text-accent-primary disabled:opacity-50"
-              >
-                <Code2 size={20} />
-                Continue with GitHub
               </button>
               <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
