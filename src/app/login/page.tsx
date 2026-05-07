@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable react/no-unescaped-entities */
+
 import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { Mail, Code2, Zap, ArrowRight, Lock } from 'lucide-react';
